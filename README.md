@@ -1,4 +1,4 @@
-#Установка vscale-плагина для terraform
+# Установка vscale-плагина для terraform
 1. Установить golang:  
 ```sudo apt install golang```
 2. Скачиваем репозитрий (например в домашнюю дирректорию):  
