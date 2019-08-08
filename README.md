@@ -14,8 +14,8 @@ provider "vscale" {
 }
 
 resource "vscale_ssh_key" "my_ssh_key" {
-  name = "my.ssh.key"
-  key  = "${file("~/.ssh/id_rsa.pub")}"
+  name      = "my.ssh.key"
+  key       = "${file("~/.ssh/id_rsa.pub")}"
 }
 
 resource "vscale_scalet" "my_vscale_scalet" {
