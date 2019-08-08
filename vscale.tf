@@ -3,8 +3,8 @@ provider "vscale" {
 }
 
 resource "vscale_ssh_key" "icetony" {
-  name = "icetony.ssh.key"
-  key  = "${file("~/.ssh/id_rsa.pub")}"
+  name      = "icetony.ssh.key"
+  key       = "${file("~/.ssh/id_rsa.pub")}"
 }
 
 resource "vscale_scalet" "terr_ops4_test" {
