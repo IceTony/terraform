@@ -1,3 +1,4 @@
 !.gitignore
 .idea/
 terraform.tfstate*
+.terraform/
