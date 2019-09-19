@@ -57,7 +57,6 @@ resource "google_compute_backend_service" "icetony_bs" {
     group         = "${google_compute_instance_group.icetony_vm_group.self_link}"
   }
   health_checks   = ["${google_compute_http_health_check.icetony_health_check.self_link}"]
-  enable_cdn      = "true"
 }
 
 resource "google_compute_global_address" "ext_ip" {
@@ -80,21 +79,6 @@ resource "google_compute_target_http_proxy" "default" {
 resource "google_compute_url_map" "default" {
   name            = "icetony-url-map"
   default_service = "${google_compute_backend_service.icetony_bs.self_link}"
-  
-  host_rule {
-    hosts        = ["${aws_route53_record.icetony_frontend_dns.name}"]
-    path_matcher = "allpaths"
-  }
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = "${google_compute_backend_service.icetony_bs.self_link}"
-
-    path_rule {
-      paths   = ["/*"]
-      service = "${google_compute_backend_service.icetony_bs.self_link}"
-    }
-  }
 }
 
 resource "aws_route53_record" "icetony_frontend_dns" {
@@ -105,13 +89,21 @@ resource "aws_route53_record" "icetony_frontend_dns" {
   records                 = ["${google_compute_global_address.ext_ip.address}"]
 }
 
+resource "aws_route53_record" "icetony_backend_dns" {
+  zone_id                 = "${data.aws_route53_zone.srwx-net.zone_id}"
+  name                    = "icetony-backend.${data.aws_route53_zone.srwx-net.name}"
+  type                    = "A"
+  ttl                     = "300"
+  records                 = ["${join("", google_compute_instance.icetony_vm.*.network_interface.0.access_config.0.nat_ip)}"]
+}
+
 resource "google_compute_http_health_check" "icetony_health_check" {
   name         = "icetony-health-check"
-  request_path = "/health_check"
+  request_path = "/"
 }
 
 output "compute_instance_external_ip_addresses" {
-  value       = "${google_compute_instance.icetony_vm.*.network_interface.0.access_config.0.nat_ip}"
+  value       = "${join("", google_compute_instance.icetony_vm.*.network_interface.0.access_config.0.nat_ip)}"
 }
 
 output "global_ip_addresses" {
